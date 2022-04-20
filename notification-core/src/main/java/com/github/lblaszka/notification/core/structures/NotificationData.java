@@ -11,4 +11,12 @@ public class NotificationData {
     public final LocalDateTime dateTime;
     public final Collection<String> tags;
     public final String content;
+
+    public static NotificationData.NotificationDataBuilder copy( NotificationData notificationData ) {
+        return builder()
+                .id( notificationData.id )
+                .dateTime( notificationData.dateTime )
+                .content( notificationData.content )
+                .tags( notificationData.tags );
+    }
 }

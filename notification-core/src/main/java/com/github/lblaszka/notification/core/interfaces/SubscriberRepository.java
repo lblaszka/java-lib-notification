@@ -1,15 +1,15 @@
 package com.github.lblaszka.notification.core.interfaces;
 
 import com.github.lblaszka.notification.core.structures.SubscriberData;
+import com.github.lblaszka.notification.core.utils.Pagination;
 
-import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 public interface SubscriberRepository {
     Optional<SubscriberData> findById( Long subscriberId );
-    Collection<SubscriberData> find( int pageSize, int pageNumber );
+    Map<Long, SubscriberData> findAll( Pagination pagination );
 
-
-    Long save( SubscriberData subscriberData );
+    SubscriberData save( SubscriberData subscriberData );
     void remove( Long subscriberId );
 }
