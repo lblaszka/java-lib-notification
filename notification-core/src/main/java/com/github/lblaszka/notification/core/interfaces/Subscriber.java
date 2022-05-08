@@ -12,11 +12,12 @@ public interface Subscriber {
     Observable<Notification> incomingNotifications();
     Observable<Boolean> unreadNotifications();
 
-    Optional<Notification> getNotification( Long notificationId );
+    Optional<Notification> getNotification( long notificationId );
+
     Collection<Notification> getNotifications( Pagination pagination );
     Collection<Notification> getNotifications( Pagination pagination, boolean read );
-
     Collection<String> getSubscribedTags();
+
     void addSubscribedTags( String... subscribedTags );
-    void removeSubscribedTags( String... unsubscribedTags );
+    void deleteSubscribedTags(String... unsubscribedTags );
 }

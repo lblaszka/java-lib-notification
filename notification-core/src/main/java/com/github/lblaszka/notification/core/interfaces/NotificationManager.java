@@ -7,6 +7,6 @@ import java.util.Collection;
 
 public interface NotificationManager {
     Long emitNotification( Collection<String> notificationTags, String content );
-    Collection<NotificationData> getNotifications( Pagination pagination );
-    void removeNotification( Long notificationId );
+    Collection<NotificationData> getNotificationData(Pagination pagination );
+    void deleteNotification(long notificationId );
 }

@@ -1,8 +1,10 @@
 package com.github.lblaszka.notification.core.structures;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 @Builder
+@EqualsAndHashCode
 public class NotificationAddresseeData {
     public final Long subscriberId;
     public final Long notificationId;

@@ -1,11 +1,13 @@
 package com.github.lblaszka.notification.core.structures;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Builder
+@EqualsAndHashCode
 public class NotificationData {
     public final Long id;
     public final LocalDateTime dateTime;

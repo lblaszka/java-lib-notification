@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface SubscriberManger {
-    Optional<Subscriber> getById( Long subscriberId );
+    Optional<Subscriber> getById( long subscriberId );
     Collection<Subscriber> getAll( Pagination pagination );
 
     Subscriber createNew( String... subscribedTags );
-    void remove( Long subscriberId );
+    void delete(long subscriberId );
 }
