@@ -11,6 +11,7 @@ import lombok.Builder;
 public class NotificationImpl implements Notification {
     private final Long subscriberId;
     private boolean read;
+    private boolean hide;
     private final NotificationData notificationData;
     private final NotificationAddresseeRepository notificationAddresseeRepository;
 
@@ -21,6 +22,9 @@ public class NotificationImpl implements Notification {
 
     @Override
     public void setRead() {
+        if( this.read || this.hide )
+            return;
+
         this.read = true;
 
         NotificationAddresseeData notificationAddresseeData = NotificationAddresseeData.builder()
@@ -34,6 +38,10 @@ public class NotificationImpl implements Notification {
 
     @Override
     public void hide() {
+        if( this.hide )
+            return;
+
+        this.hide = true;
         this.notificationAddresseeRepository.delete( this.subscriberId, this.notificationData.id );
     }
 

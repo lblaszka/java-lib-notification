@@ -7,13 +7,13 @@ public class Pagination {
 
     public static Pagination of( int pageSize, int pageNumber ) {
         if( pageSize <= 0 || pageNumber < 0 )
-            throw new RuntimeException("Invalid params!");
+            throw new IllegalArgumentException("Invalid params!");
 
         return new Pagination( pageSize, pageNumber, false );
     }
 
     public static Pagination noPaging() {
-        return new Pagination( -1, 0, true );
+        return new Pagination( 0, 0, true );
     }
 
     private Pagination(int pageSize, int pageNumber, boolean noPaging ) {

@@ -2,75 +2,90 @@ package com.github.lblaszka.notification.core.classes;
 
 import com.github.lblaszka.notification.core.interfaces.Notification;
 import com.github.lblaszka.notification.core.interfaces.NotificationAddresseeRepository;
+import com.github.lblaszka.notification.core.interfaces.NotificationTest;
 import com.github.lblaszka.notification.core.structures.NotificationAddresseeData;
 import com.github.lblaszka.notification.core.structures.NotificationData;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import java.util.Random;
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
-class NotificationImplTest {
+class NotificationImplTest extends NotificationTest {
+    private final Long SUBSCRIBER_ID = 1L;
 
     NotificationAddresseeRepository notificationAddresseeRepositoryMock;
-    NotificationData notificationData;
-    Long subscriberId;
-    Notification notification;
 
-
-    @BeforeEach
-    public void before() {
-        this.notificationData = NotificationData.builder().id( 1L ).build();
+    @Override
+    protected Notification of(boolean read, NotificationData notificationData ) {
         this.notificationAddresseeRepositoryMock = mock( NotificationAddresseeRepository.class );
-        this.subscriberId = new Random().nextLong();
-        this.notification = this.getNotificationImpl( this.subscriberId, this.notificationData, this.notificationAddresseeRepositoryMock );
-    }
 
-    @Test
-    void isRead() {
-        Assertions.assertFalse(this.notification.isRead());
-
-        this.notification.setRead();
-        Assertions.assertTrue(this.notification.isRead());
-    }
-
-    @Test
-    void setRead() {
-        Assertions.assertFalse(this.notification.isRead());
-
-        this.notification.setRead();
-        Assertions.assertTrue(this.notification.isRead());
-
-        NotificationAddresseeData notificationAddresseeData = NotificationAddresseeData.builder()
-                .notificationId( this.notificationData.id )
-                .subscriberId( this.subscriberId )
-                .read( true )
-                .build();
-
-        verify( this.notificationAddresseeRepositoryMock ).save( notificationAddresseeData );
-    }
-
-    @Test
-    void hide() {
-        this.notification.hide();
-        verify( this.notificationAddresseeRepositoryMock ).delete( this.subscriberId, this.notificationData.id );
-    }
-
-    @Test
-    void getDetails() {
-        Assertions.assertEquals( this.notificationData, this.notification.getDetails() );
-    }
-
-    private Notification getNotificationImpl( Long subscriberId, NotificationData notificationData, NotificationAddresseeRepository notificationAddresseeRepository ) {
         return NotificationImpl.builder()
-                .subscriberId( subscriberId)
-                .read( false )
-                .notificationAddresseeRepository( notificationAddresseeRepository )
-                .notificationData( notificationData )
-                .build();
+            .subscriberId( SUBSCRIBER_ID )
+            .read( read )
+            .notificationAddresseeRepository( this.notificationAddresseeRepositoryMock )
+            .notificationData( notificationData )
+            .build();
     }
 
+    @Test
+    void testSetReadUpdateCorrectEntity() {
+        NotificationAddresseeData expectedNotificationAddresseeData = this.getNotificationAddresseeDataOf( true );
+        Notification notification = this.of( false, this.getNotificationData() );
+
+        notification.setRead();
+
+        Mockito.verify( this.notificationAddresseeRepositoryMock, times( 1 ) )
+                .save( expectedNotificationAddresseeData );
+    }
+
+    @Test
+    void testSetReadUpdateEntityOnlyOnes() {
+        Notification notification = this.of( false, this.getNotificationData() );
+
+        notification.setRead();
+        notification.setRead();
+
+        Mockito.verify( this.notificationAddresseeRepositoryMock, times( 1 ) )
+                .save( any() );
+    }
+
+    @Test
+    void testHideDeleteEntity() {
+        Notification notification = this.of( false, this.getNotificationData() );
+        notification.hide();
+
+        Mockito.verify( this.notificationAddresseeRepositoryMock, times( 1 ) )
+                .delete( SUBSCRIBER_ID, NOTIFICATION_ID );
+    }
+
+    @Test
+    void testHideTryDeleteEntityOnlyOnes() {
+        Notification notification = this.of( false, this.getNotificationData() );
+        notification.hide();
+        notification.hide();
+
+        Mockito.verify( this.notificationAddresseeRepositoryMock, times( 1 ) )
+                .delete( anyLong(), anyLong() );
+    }
+
+    @Test
+    void testAfterHideReadNotUpdatedEntity() {
+        Notification notification = this.of( false, this.getNotificationData() );
+        notification.hide();
+        notification.setRead();
+
+        Mockito.verify( this.notificationAddresseeRepositoryMock, times( 0 ) )
+                .save( any() );
+    }
+
+    private NotificationAddresseeData getNotificationAddresseeDataOf( boolean read ) {
+        return NotificationAddresseeData.builder()
+                .subscriberId( SUBSCRIBER_ID )
+                .notificationId( NOTIFICATION_ID )
+                .read( read )
+                .build();
+    }
 }
