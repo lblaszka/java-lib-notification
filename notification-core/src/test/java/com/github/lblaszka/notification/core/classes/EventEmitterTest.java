@@ -2,6 +2,7 @@ package com.github.lblaszka.notification.core.classes;
 
 import com.github.lblaszka.notification.core.interfaces.Notification;
 import com.github.lblaszka.notification.core.structures.NotificationData;
+import com.github.lblaszka.notification.core.structures.SubscriberData;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
@@ -107,5 +108,40 @@ class EventEmitterTest {
                 .filter( entry -> entry.getValue().contains( subscriberId ) )
                 .map( Map.Entry::getKey )
                 .collect(Collectors.toList());
+    }
+
+    @Test
+    public void subscriberChangeEmitTest() {
+        Collection<SubscriberData> dataFirstPart = Arrays.asList(
+                SubscriberData.builder().id( 1L ).subscribeTagCollection( Arrays.asList("ONE", "TWO") ).build(),
+                SubscriberData.builder().id( 2L ).subscribeTagCollection(Collections.emptyList()).build()
+        );
+
+        Collection<SubscriberData> dataSecondPart = Arrays.asList(
+                SubscriberData.builder().id( 3L ).subscribeTagCollection(Collections.singletonList("TREE")).build(),
+                SubscriberData.builder().id( 4L ).subscribeTagCollection(Collections.singletonList("FOUR")).build()
+        );
+
+
+        Collection<SubscriberData> dataAll = new ArrayList<>();
+        Assertions.assertTrue( dataAll.addAll( dataFirstPart ), "Failed create testing data set");
+        Assertions.assertTrue( dataAll.addAll( dataSecondPart ), "Failed create testing data set");
+
+
+        TestObserver<SubscriberData> subscriberDataTestObserverWithAllData = this.eventEmitter.changedSubscribedTag().test();
+        dataFirstPart.forEach( this.eventEmitter::changeSubscribedTagEvent );
+        TestObserver<SubscriberData> subscriberDataTestObserverWithHalf = this.eventEmitter.changedSubscribedTag().test();
+        dataSecondPart.forEach( this.eventEmitter::changeSubscribedTagEvent );
+
+
+        subscriberDataTestObserverWithAllData
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValueSequence( dataAll );
+
+        subscriberDataTestObserverWithHalf
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValueSequence( dataSecondPart );
     }
 }

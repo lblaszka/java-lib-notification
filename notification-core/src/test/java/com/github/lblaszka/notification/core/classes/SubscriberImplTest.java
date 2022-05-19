@@ -168,8 +168,8 @@ class SubscriberImplTest {
 
         this.subscriber.addSubscribedTags("FOUR");
         this.subscriber.addSubscribedTags("FOUR", "FIVE");
-        this.subscriber.addSubscribedTags("ONE", "TWO", "TREE");
-        this.subscriber.addSubscribedTags("FOUR", "ONE");
+        this.subscriber.addSubscribedTags("one", "two", "tree");
+        this.subscriber.addSubscribedTags("FOUR", "one");
 
         verify( this.subscriberRepository, times(4) ).save( subscriberDataArgumentCaptor.capture() );
 
@@ -207,8 +207,8 @@ class SubscriberImplTest {
 
         this.subscriber.deleteSubscribedTags("ONE");
         this.subscriber.deleteSubscribedTags("FOUR");
-        this.subscriber.deleteSubscribedTags("ONE", "TREE");
-        this.subscriber.deleteSubscribedTags("FOUR", "ONE");
+        this.subscriber.deleteSubscribedTags("one", "tree");
+        this.subscriber.deleteSubscribedTags("FOUR", "one");
 
         verify( this.subscriberRepository, times(4) ).save( subscriberDataArgumentCaptor.capture() );
 

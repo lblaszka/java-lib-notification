@@ -94,7 +94,7 @@ public class SubscriberImpl implements Subscriber {
     @Override
     public void addSubscribedTags(String... tag) {
         Set<String> subscribedTagSet = this.getSubscribedTagSetFromRepository();
-        subscribedTagSet.addAll( Arrays.asList( tag) );
+        subscribedTagSet.addAll( Arrays.stream( tag).map( String::toUpperCase ).collect(Collectors.toSet()) );
         this.saveSubscribedTagInRepository( subscribedTagSet );
     }
 
@@ -102,7 +102,7 @@ public class SubscriberImpl implements Subscriber {
     public void deleteSubscribedTags(String... tag) {
         Set<String> subscribedTagSet = this.getSubscribedTagSetFromRepository();
 
-        Arrays.asList( tag )
+        Arrays.stream( tag).map( String::toUpperCase ).collect(Collectors.toSet())
                 .forEach(subscribedTagSet::remove);
 
         this.saveSubscribedTagInRepository( subscribedTagSet );

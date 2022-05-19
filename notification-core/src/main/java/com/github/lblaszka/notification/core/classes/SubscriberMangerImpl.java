@@ -54,7 +54,12 @@ public class SubscriberMangerImpl implements SubscriberManger {
     }
 
     private SubscriberData createSubscribedData( String... subscribedTags ) {
-        return this.subscriberRepository.save( SubscriberData.builder().subscribeTagCollection( Arrays.asList( subscribedTags ) ).build() );
+        Collection<String> subscribedTag = Arrays
+                .stream( subscribedTags )
+                .map( String::toUpperCase )
+                .collect(Collectors.toSet());
+
+        return this.subscriberRepository.save( SubscriberData.builder().subscribeTagCollection( subscribedTag ).build() );
     }
 
     private Subscriber subscriberOf( SubscriberData subscriberData ) {

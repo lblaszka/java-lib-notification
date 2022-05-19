@@ -11,6 +11,7 @@ import com.github.lblaszka.notification.core.utils.Pagination;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NotificationManagerImpl implements NotificationManager {
     private final EventEmitter eventEmitter;
@@ -34,8 +35,11 @@ public class NotificationManagerImpl implements NotificationManager {
         Objects.requireNonNull( notificationTags, "Notification parameter tag collection is null!" );
         Objects.requireNonNull( content, "Content parameter is null!");
 
-        NotificationData notificationData = this.saveNotificationDataFrom( notificationTags, content );
-        Collection<Long> addresseeIdCollection = this.getNotificationAddresseesOfTagCollection( notificationTags );
+        Collection<String> notificationTagsUpperCaseWithoutDuplications
+                = notificationTags.stream().map( String::toUpperCase ).collect(Collectors.toSet());
+
+        NotificationData notificationData = this.saveNotificationDataFrom( notificationTagsUpperCaseWithoutDuplications, content );
+        Collection<Long> addresseeIdCollection = this.getNotificationAddresseesOfTagCollection( notificationTagsUpperCaseWithoutDuplications );
         this.saveNotificationAddressees( notificationData.id, addresseeIdCollection );
         this.eventEmitter.newNotificationEvent( notificationData, addresseeIdCollection );
 
